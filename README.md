@@ -1,4 +1,4 @@
-# cpppio.js
+# cppp-io.js
 
 Client JavaScript library for interacting with any device that supports the CPPP.IO protocol.
 
