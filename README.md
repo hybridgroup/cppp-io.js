@@ -5,14 +5,14 @@ Client JavaScript library for interacting with any device that supports the CPPP
 ## How we want to use it via REST:
 
 ```javascript
-var cpppio = require("cpppio");
+var client = require("cppp-io");
 
-cpppio.connect("http", {host: "192.168.0.1", port:3000});
-cpppio.getRobots(function(err, list){
+client.connect("http", {host: "192.168.0.1", port:3000});
+client.getRobots(function(err, list){
 	console.log(list);
 });
 
-cpppio.getRobot(function(err, robot){
+client.getRobot(function(err, robot){
 	robot.getDevices(function(err, list){
 		console.log(list)
 	});
@@ -22,14 +22,14 @@ cpppio.getRobot(function(err, robot){
 ## How we want to use it via socket-io:
 
 ```javascript
-var cpppio = require("cpppio");
+var client = require("cppp-io");
 
-cpppio.connect("socketio", {host: "192.168.0.1", port:3000});
-cpppio.getRobots(function(err, list){
+client.connect("socketio", {host: "192.168.0.1", port:3000});
+client.getRobots(function(err, list){
 	console.log(list);
 });
 
-cpppio.getRobot(function(err, robot){
+client.getRobot(function(err, robot){
 	robot.getDevices(function(err, list){
 		console.log(list)
 	});
@@ -39,14 +39,14 @@ cpppio.getRobot(function(err, robot){
 ## How we want to use it via MQTT:
 
 ```javascript
-var cpppio = require("cpppio");
+var client = require("cppp-io");
 
-cpppio.connect("mqtt", {host: "192.168.0.1", port:3000});
-cpppio.getRobots(function(err, list){
+client.connect("mqtt", {host: "192.168.0.1", port:3000});
+client.getRobots(function(err, list){
 	console.log(list);
 });
 
-cpppio.getRobot(function(err, robot){
+client.getRobot(function(err, robot){
 	robot.getDevices(function(err, list){
 		console.log(list)
 	});
