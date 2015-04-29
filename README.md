@@ -12,7 +12,7 @@ client.getRobots(function(err, list){
 	console.log(list);
 });
 
-client.getRobot(function(err, robot){
+client.getRobot("cyborg1", function(err, robot){
 	robot.getDevices(function(err, list){
 		console.log(list)
 	});
@@ -29,7 +29,7 @@ client.getRobots(function(err, list){
 	console.log(list);
 });
 
-client.getRobot(function(err, robot){
+client.getRobot("cyborg1", function(err, robot){
 	robot.getDevices(function(err, list){
 		console.log(list)
 	});
@@ -46,7 +46,7 @@ client.getRobots(function(err, list){
 	console.log(list);
 });
 
-client.getRobot(function(err, robot){
+client.getRobot("cyborg1", function(err, robot){
 	robot.getDevices(function(err, list){
 		console.log(list)
 	});
