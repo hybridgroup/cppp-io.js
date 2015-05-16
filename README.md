@@ -16,8 +16,8 @@ console.log(robots);
 
 // OR
 
-client.getRobots(function(err, list){
-	console.log(list);
+client.getRobots(function(err, robots){
+	console.log(robots);
 });
 
 
@@ -27,8 +27,11 @@ var robot = client.getRobot('myRobot');
 // OR
 
 client.getRobot("cyborg1", function(err, robot){
-	robot.getDevices(function(err, robots){
-		console.log(robots)
+	robot.getDevices(function(err, devices){
+		console.log(devices)
+	});
+	robot.getCommands(function(err, commands){
+		console.log(commands)
 	});
 });
 
