@@ -8,15 +8,49 @@ Client JavaScript library for interacting with any device that supports the CPPP
 var client = require("cppp-io");
 
 client.connect("http", {host: "192.168.0.1", port:3000});
+
+
+// Get Robots 
+var robots = client.getRobots();
+console.log(robots);
+
+// OR
+
 client.getRobots(function(err, list){
 	console.log(list);
 });
 
+
+// Get Robot
+var robot = client.getRobot('myRobot');
+
+// OR
+
 client.getRobot("cyborg1", function(err, robot){
-	robot.getDevices(function(err, list){
-		console.log(list)
+	robot.getDevices(function(err, robots){
+		console.log(robots)
 	});
 });
+
+
+// Execute Command
+var robot = client.getRobot('myRobot');
+robot.commands[0].execute()
+
+// OR
+
+var robots = client.getRobots;
+robots[0].commands[0].execute()
+
+// OR
+client.getRobots(function(err, robots){
+	robots[0].commands[0].execute({param:"param1"})
+	// or
+	robots[0].getCommands(err, commands){
+		commands[0].execute();
+	}
+});
+
 ```
 
 ## How we want to use it via socket-io:
