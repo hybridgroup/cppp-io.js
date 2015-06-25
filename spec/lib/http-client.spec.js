@@ -2,12 +2,11 @@
 
 var request = require("request");
 
+var Client = source("client");
 var HttpClient = source("http-client");
 var Robot = source("robot");
-// var Device = source("device");
 var Command = source("command");
 var Event = source("event");
-// var Connection = source("connection");
 
 /*global jsonApi*/
 
@@ -16,7 +15,7 @@ describe("HttpClient", function() {
     host: "127.0.0.1",
     port: "8080"
   };
-  var httpClient = new HttpClient(options);
+  var httpClient = new HttpClient(Client, options);
 
   describe("#constructor", function() {
     it("should initialize options", function() {
