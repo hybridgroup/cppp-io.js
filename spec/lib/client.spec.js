@@ -23,11 +23,21 @@ describe("Client", function() {
   describe("#initialize with missing params", function() {
 
     it("should throw error about missing protocol", function() {
-      expect(Client.bind("new")).to.throw("Missing Protocol");
+      expect(Client.bind("new")).to.throw("Missing protocol");
     });
 
     it("should throw error about missing options", function() {
-      expect(Client.bind("new", "http")).to.throw("Missing Options");
+      expect(Client.bind("new", "http")).to.throw("No options provided");
+    });
+
+    it("should throw error about missing host", function() {
+      var fn = Client.bind("new", "http", { port: "3000" });
+      expect(fn).to.throw("No host option provided");
+    });
+
+    it("should throw error about missing port", function() {
+      var fn = Client.bind("new", "http", { host: "0.0.0.0" });
+      expect(fn).to.throw("No port option provided");
     });
   });
 
@@ -49,7 +59,7 @@ describe("Client", function() {
     it("should throw error about wrong protocol", function() {
       expect(
         Client.bind("new", "wrong", opts)
-      ).to.throw("Unsupported Protocol");
+      ).to.throw("Unsupported protocol");
     });
 
     it("should set connection to correct client", function() {
