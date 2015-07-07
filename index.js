@@ -1,13 +1,15 @@
 "use strict";
 
-var client = require("./lib/client");
-require("./lib/http-driver");
-require("./lib/command");
-require("./lib/event");
-require("./lib/robot");
-require("./lib/device");
-require("./lib/connection");
+function lib(file) {
+  return require("./lib/" + file);
+}
 
-module.exports = function() {
-    var CPPPIO = client;
+module.exports = {
+  Client: lib("client"),
+  HttpDriver: lib("http-driver"),
+  Command: lib("command"),
+  Event: lib("event"),
+  Robot: lib("robot"),
+  Device: lib("device"),
+  Connection: lib("connection")
 };
