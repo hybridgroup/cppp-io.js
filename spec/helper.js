@@ -33,7 +33,7 @@ global.jsonApi = {
       name: "myRobot",
       connections: [{
         name: "myRobotConnection",
-        adaptor: "myRobotAdaptor",
+        adaptor: "myRobotAdaptor"
       }],
       devices: [{
         name: "myRobotDevice",
