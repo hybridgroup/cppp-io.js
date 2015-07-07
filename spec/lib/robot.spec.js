@@ -2,7 +2,8 @@
 
 var request = require("request");
 
-var HttpClient = source("http-client");
+var Client = source("client");
+var HttpDriver = source("http-driver");
 var Robot = source("robot");
 
 /*global jsonApi*/
@@ -12,13 +13,14 @@ describe("Command", function() {
     host: "127.0.0.1",
     port: "8080"
   };
-  var httpClient = new HttpClient(options);
+  var client = new Client("http", options);
+  var httpDriver = new HttpDriver(client);
 
   describe("#constructor", function() {
     beforeEach(function(done) {
       sinon
         .stub(request, "get")
-        .yields(null, null, JSON.stringify(jsonApi));
+        .yields(null, {statusCode: 200}, JSON.stringify(jsonApi));
 
       done();
     });
@@ -29,11 +31,11 @@ describe("Command", function() {
     });
 
     it("should initialize robot options", function() {
-      httpClient.connect();
-      var robot = httpClient.robots[0];
+      httpDriver.connect();
+      var robot = httpDriver.robots[0];
       expect(robot).to.be.instanceOf(Robot);
       expect(robot.name).to.be.eql("myRobot");
-      expect(robot.client).to.be.eql(httpClient);
+      expect(robot.driver).to.be.eql(httpDriver);
       should.exist(robot.connections);
       should.exist(robot.commands);
       should.exist(robot.devices);
@@ -47,11 +49,11 @@ describe("Command", function() {
     beforeEach(function(done) {
       sinon
         .stub(request, "get")
-        .yields(null, null, JSON.stringify(jsonApi));
+        .yields(null, {statusCode: 200}, JSON.stringify(jsonApi));
 
       sinon
         .stub(request, "post")
-        .yields(null, 200, JSON.stringify({result: "ok"}));
+        .yields(null, {statusCode: 200}, JSON.stringify({result: "ok"}));
 
       done();
     });
@@ -64,8 +66,8 @@ describe("Command", function() {
 
     describe("#getCommands ", function() {
       it("should return the list of robots", function() {
-        httpClient.connect();
-        var robot = httpClient.robots[0];
+        httpDriver.connect();
+        var robot = httpDriver.robots[0];
         var commands = robot.getCommands();
         expect(commands.length).to.be.eql(2);
         expect(commands[0].command).to.be.eql("myRobotCommand1");
@@ -75,8 +77,8 @@ describe("Command", function() {
 
     describe("#getDevices ", function() {
       it("should return the list of devices", function() {
-        httpClient.connect();
-        var robot = httpClient.robots[0];
+        httpDriver.connect();
+        var robot = httpDriver.robots[0];
         var devices = robot.getDevices();
         expect(devices.length).to.be.eql(1);
         expect(devices[0].name).to.be.eql("myRobotDevice");
@@ -85,8 +87,8 @@ describe("Command", function() {
 
     describe("#getConnections ", function() {
       it("should return the list of connections", function() {
-        httpClient.connect();
-        var robot = httpClient.robots[0];
+        httpDriver.connect();
+        var robot = httpDriver.robots[0];
         var connections = robot.getConnections();
         expect(connections.length).to.be.eql(1);
         expect(connections[0].name).to.be.eql("myRobotConnection");
@@ -96,8 +98,8 @@ describe("Command", function() {
 
     describe("#getEvents ", function() {
       it("should return the list of events", function() {
-        httpClient.connect();
-        var robot = httpClient.robots[0];
+        httpDriver.connect();
+        var robot = httpDriver.robots[0];
         var events = robot.getEvents();
         expect(events.length).to.be.eql(2);
         expect(events[0].name).to.be.eql("myRobotEvent1");

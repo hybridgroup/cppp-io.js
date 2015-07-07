@@ -1,49 +1,43 @@
 "use strict";
 
 var Client = source("client");
-var HttpClient = source("http-client");
-var SocketClient = source("socketio-client");
-var MqttClient = source("mqtt-client");
+var HttpClient = source("http-driver");
+var SocketClient = source("socketio-driver");
+var MqttClient = source("mqtt-driver");
 var request = require("request");
 
 /*global jsonApi*/
 
 describe("Client", function() {
-  var client = Client;
-  beforeEach(function() {
-    client.disconnect();
-  });
+  var options = {host: "127.0.0.1", port: 8080};
+
   describe("#constructor", function() {
-    it("should initialize connected variable with false", function() {
-      expect(client.connected).to.be.eql(false);
-    });
-
-    it("should initialize connected variable with false", function() {
-      expect(client.connection).to.be.eql(null);
+    it("should initialize options", function() {
+      var client = new Client("http", options);
+      expect(client.protocol).to.be.eql("http");
+      expect(client.host).to.be.eql("127.0.0.1");
+      expect(client.port).to.be.eql(8080);
     });
   });
 
-  describe("#connect with missing params", function() {
+  describe("#initialize with missing params", function() {
+
     it("should throw error about missing protocol", function() {
-      expect(
-        client.connect.bind(client)
-      ).to.throw("Missing Protocol");
+      expect(Client.bind("new")).to.throw("Missing Protocol");
     });
 
     it("should throw error about missing options", function() {
-      expect(
-        client.connect.bind(client, "http")
-      ).to.throw("Missing Options");
+      expect(Client.bind("new", "http")).to.throw("Missing Options");
     });
   });
 
-  describe("#connect with correct params", function() {
+  describe("#initialize with correct params", function() {
     var opts = { host: "127.0.0.1", port: "3000" };
 
     beforeEach(function(done) {
       sinon
         .stub(request, "get")
-        .yields(null, null, JSON.stringify(jsonApi));
+        .yields(null, {statusCode: 200}, JSON.stringify(jsonApi));
       done();
     });
 
@@ -54,36 +48,26 @@ describe("Client", function() {
 
     it("should throw error about wrong protocol", function() {
       expect(
-        client.connect.bind(client, "wrong", opts)
+        Client.bind("new", "wrong", opts)
       ).to.throw("Unsupported Protocol");
     });
 
-    it("should set connected to true", function() {
-      client.connect("http", opts);
-      expect(
-        client.connected
-      ).to.be.eql(true);
+    it("should set connection to correct client", function() {
+      var client = new Client("http", opts);
+      client.connect();
+      expect(client.connection).to.be.an.instanceOf(HttpClient);
     });
 
     it("should set connection to correct client", function() {
-      client.connect("http", opts);
-      expect(
-        client.connection
-      ).to.be.an.instanceOf(HttpClient);
+      var client = new Client("socketio", opts);
+      client.connect();
+      expect(client.connection).to.be.an.instanceOf(SocketClient);
     });
 
     it("should set connection to correct client", function() {
-      client.connect("socketio", opts);
-      expect(
-        client.connection
-      ).to.be.an.instanceOf(SocketClient);
-    });
-
-    it("should set connection to correct client", function() {
-      client.connect("mqtt", opts);
-      expect(
-        client.connection
-      ).to.be.an.instanceOf(MqttClient);
+      var client = new Client("mqtt", opts);
+      client.connect();
+      expect(client.connection).to.be.an.instanceOf(MqttClient);
     });
 
   });
@@ -92,7 +76,7 @@ describe("Client", function() {
     beforeEach(function(done) {
       sinon
         .stub(request, "get")
-        .yields(null, null, JSON.stringify(jsonApi));
+        .yields(null, {statusCode: 200}, JSON.stringify(jsonApi));
       done();
     });
 
@@ -104,7 +88,8 @@ describe("Client", function() {
     describe("#getRobots", function() {
       it("should get the list of robots", function() {
         var opts = { host: "127.0.0.1", port: "3000" };
-        client.connect("http", opts);
+        var client = new Client("http", opts);
+        client.connect();
         expect(client.getRobots()).to.be.instanceof(Array);
       });
     });
@@ -112,13 +97,15 @@ describe("Client", function() {
     describe("#getRobot", function() {
       it("should return the robot", function() {
         var opts = { host: "127.0.0.1", port: "3000" };
-        client.connect("http", opts);
+        var client = new Client("http", opts);
+        client.connect();
         should.exist(client.getRobot("myRobot"));
       });
 
       it("should return null if no robot found", function() {
         var opts = { host: "127.0.0.1", port: "3000" };
-        client.connect("http", opts);
+        var client = new Client("http", opts);
+        client.connect();
         should.not.exist(client.getRobot("otherRobot"));
       });
     });
@@ -126,7 +113,8 @@ describe("Client", function() {
     describe("#getCommands", function() {
       it("should get the list of commands", function() {
         var opts = { host: "127.0.0.1", port: "3000" };
-        client.connect("http", opts);
+        var client = new Client("http", opts);
+        client.connect();
         expect(client.getCommands()).to.be.instanceof(Array);
       });
     });
@@ -134,7 +122,8 @@ describe("Client", function() {
     describe("#getEvents", function() {
       it("should get the list of events", function() {
         var opts = { host: "127.0.0.1", port: "3000" };
-        client.connect("http", opts);
+        var client = new Client("http", opts);
+        client.connect();
         expect(client.getEvents()).to.be.instanceof(Array);
       });
     });
@@ -142,13 +131,8 @@ describe("Client", function() {
 
   describe("#disconnect", function() {
     it("should set connected to false", function() {
-      client.disconnect();
-      expect(
-        client.connected
-      ).to.be.eql(false);
-    });
-
-    it("should set connection to null", function() {
+      var client = new Client("http", options);
+      client.connect();
       client.disconnect();
       expect(
         client.connection

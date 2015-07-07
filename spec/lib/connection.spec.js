@@ -2,7 +2,8 @@
 
 var request = require("request");
 
-var HttpClient = source("http-client");
+var Client = source("client");
+var HttpDriver = source("http-driver");
 var Connection = source("connection");
 
 /*global jsonApi*/
@@ -12,13 +13,14 @@ describe("Connection", function() {
     host: "127.0.0.1",
     port: "8080"
   };
-  var httpClient = new HttpClient(options);
+  var client = new Client("http", options);
+  var httpDriver = new HttpDriver(client);
 
   describe("#constructor", function() {
     beforeEach(function(done) {
       sinon
         .stub(request, "get")
-        .yields(null, null, JSON.stringify(jsonApi));
+        .yields(null, {statusCode: 200}, JSON.stringify(jsonApi));
       done();
     });
 
@@ -28,12 +30,12 @@ describe("Connection", function() {
     });
 
     it("should initialize robot commands connections", function() {
-      httpClient.connect();
-      var connection = httpClient.robots[0].connections[0];
+      httpDriver.connect();
+      var connection = httpDriver.robots[0].connections[0];
       expect(connection).to.be.instanceOf(Connection);
       expect(connection.name).to.be.eql("myRobotConnection");
       expect(connection.adaptor).to.be.eql("myRobotAdaptor");
-      expect(connection.robot).to.be.eql(httpClient.robots[0]);
+      expect(connection.robot).to.be.eql(httpDriver.robots[0]);
     });
 
   });

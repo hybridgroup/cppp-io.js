@@ -3,24 +3,25 @@
 var request = require("request");
 
 var Client = source("client");
-var HttpClient = source("http-client");
+var HttpDriver = source("http-driver");
 var Robot = source("robot");
 var Command = source("command");
 var Event = source("event");
 
 /*global jsonApi*/
 
-describe("HttpClient", function() {
+describe("HttpDriver", function() {
   var options = {
     host: "127.0.0.1",
     port: "8080"
   };
-  var httpClient = new HttpClient(Client, options);
+  var client = new Client("http", options);
+  var httpDriver = new HttpDriver(client);
 
   describe("#constructor", function() {
     it("should initialize options", function() {
-      expect(httpClient.host).to.be.eql(options.host);
-      expect(httpClient.port).to.be.eql(options.port);
+      expect(httpDriver.host).to.be.eql(options.host);
+      expect(httpDriver.port).to.be.eql(options.port);
     });
   });
 
@@ -28,7 +29,7 @@ describe("HttpClient", function() {
     beforeEach(function(done) {
       sinon
         .stub(request, "get")
-        .yields(null, null, JSON.stringify(jsonApi));
+        .yields(null, {statusCode: 200}, JSON.stringify(jsonApi));
       done();
     });
 
@@ -39,8 +40,8 @@ describe("HttpClient", function() {
 
     describe("#getRequest", function() {
       it("should make a get request", function(done) {
-        httpClient.getRequest(
-          httpClient.url(),
+        httpDriver.getRequest(
+          httpDriver.url(),
           function(error, response, body) {
             if (error) {
               return done();
@@ -55,23 +56,23 @@ describe("HttpClient", function() {
 
     describe("#getApi", function() {
       it("should return error when not connected", function() {
-        var api = httpClient.getApi();
+        var api = httpDriver.getApi();
         expect(api).to.be.eql("Not Connected");
       });
     });
 
     describe("#getApi", function() {
       it("should returns an object containing info on the MCP", function() {
-        httpClient.connect();
-        var api = httpClient.getApi();
+        httpDriver.connect();
+        var api = httpDriver.getApi();
         expect(api).to.have.any.keys("commands", "events", "robots");
       });
     });
 
     describe("#getCommands", function() {
       it("should returns the MCP commands", function() {
-        httpClient.connect();
-        var commands = httpClient.getCommands();
+        httpDriver.connect();
+        var commands = httpDriver.getCommands();
         expect(commands[0].command).to.be.eql("myCommand1");
         expect(commands[1].command).to.be.eql("myCommand2");
         expect(commands[0]).to.be.instanceOf(Command);
@@ -81,8 +82,8 @@ describe("HttpClient", function() {
 
     describe("#getRobots", function() {
       it("should returns the MCP robots", function() {
-        httpClient.connect();
-        var robots = httpClient.getRobots();
+        httpDriver.connect();
+        var robots = httpDriver.getRobots();
         expect(robots[0].name).to.be.eql("myRobot");
         expect(robots[0]).to.be.instanceOf(Robot);
       });
@@ -90,8 +91,8 @@ describe("HttpClient", function() {
 
     describe("#getEvents", function() {
       it("should returns the MCP events", function() {
-        httpClient.connect();
-        var events = httpClient.getEvents();
+        httpDriver.connect();
+        var events = httpDriver.getEvents();
         expect(events[0].name).to.be.eql("myEvent1");
         expect(events[1].name).to.be.eql("myEvent2");
         expect(events[0]).to.be.instanceOf(Event);
@@ -104,7 +105,7 @@ describe("HttpClient", function() {
     beforeEach(function(done) {
       sinon
         .stub(request, "post")
-        .yields(null, 200, JSON.stringify({result: "ok"}));
+        .yields(null, {statusCode: 200}, JSON.stringify({result: "ok"}));
       done();
     });
 
@@ -114,15 +115,15 @@ describe("HttpClient", function() {
     });
 
     it("should send the request", function(done) {
-      httpClient.postRequest(
-        httpClient.url(),
+      httpDriver.postRequest(
+        httpDriver.url(),
         {param: "my param"},
         function(error, response, body) {
           if (error) {
             return done();
           }
           expect(request.post.called).to.be.equal(true);
-          expect(response).to.be.equal(200);
+          expect(response.statusCode).to.be.equal(200);
           expect(JSON.parse(body)).to.be.eql({result: "ok"});
           done();
         }
