@@ -9,7 +9,7 @@ var gutil = require('gulp-util');
 
 gulp.task('browserify', function () {
   var b = browserify({
-    entries: ['./main.js']
+    entries: ['./index.js']
   });
 
   b.require('./lib/client.js', {expose: 'cppp-io'});

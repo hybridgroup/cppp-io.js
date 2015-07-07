@@ -1,8 +1,7 @@
 {
   "name": "cppp-io.js",
-  "version": "0.0.0",
-  "main": "lib/cppp-io.js",
-  "description": "A Client JavaScript library for interacting with any device that supports the CPPP.IO protocol.",
+  "version": "0.0.1",
+  "description": "A Client JavaScript library for interacting with services supporting the CPPP.IO protocol",
   "author": "The Hybrid Group <cylonjs@hybridgroup.com>",
   "repository": {
     "type": "git",
