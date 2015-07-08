@@ -1,9 +1,9 @@
 "use strict";
 
 var Client = source("client");
-var HttpClient = source("http-driver");
-var SocketClient = source("socketio-driver");
-var MqttClient = source("mqtt-driver");
+var HTTP = source("drivers/http");
+var SocketIO = source("drivers/socketio");
+var MQTT = source("drivers/mqtt");
 var request = require("request");
 
 /*global jsonApi*/
@@ -65,19 +65,19 @@ describe("Client", function() {
     it("should set connection to correct client", function() {
       var client = new Client("http", opts);
       client.connect();
-      expect(client.connection).to.be.an.instanceOf(HttpClient);
+      expect(client.connection).to.be.an.instanceOf(HTTP);
     });
 
     it("should set connection to correct client", function() {
       var client = new Client("socketio", opts);
       client.connect();
-      expect(client.connection).to.be.an.instanceOf(SocketClient);
+      expect(client.connection).to.be.an.instanceOf(SocketIO);
     });
 
     it("should set connection to correct client", function() {
       var client = new Client("mqtt", opts);
       client.connect();
-      expect(client.connection).to.be.an.instanceOf(MqttClient);
+      expect(client.connection).to.be.an.instanceOf(MQTT);
     });
 
   });

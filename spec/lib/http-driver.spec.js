@@ -3,20 +3,20 @@
 var request = require("request");
 
 var Client = source("client");
-var HttpDriver = source("http-driver");
+var HTTP = source("drivers/http");
 var Robot = source("robot");
 var Command = source("command");
 var Event = source("event");
 
 /*global jsonApi*/
 
-describe("HttpDriver", function() {
+describe("HTTP", function() {
   var options = {
     host: "127.0.0.1",
     port: "8080"
   };
   var client = new Client("http", options);
-  var httpDriver = new HttpDriver(client);
+  var httpDriver = new HTTP(client);
 
   describe("#constructor", function() {
     it("should initialize options", function() {

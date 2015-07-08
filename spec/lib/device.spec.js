@@ -3,7 +3,7 @@
 var request = require("request");
 
 var Client = source("client");
-var HttpDriver = source("http-driver");
+var HTTP = source("drivers/http");
 var Device = source("device");
 
 /*global jsonApi*/
@@ -14,7 +14,7 @@ describe("Command", function() {
     port: "8080"
   };
   var client = new Client("http", options);
-  var httpDriver = new HttpDriver(client);
+  var httpDriver = new HTTP(client);
 
   describe("#constructor", function() {
     beforeEach(function(done) {
