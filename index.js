@@ -1,15 +1,17 @@
 "use strict";
 
-function lib(file) {
-  return require("./lib/" + file);
-}
-
 module.exports = {
-  Client: lib("client"),
-  HttpDriver: lib("http-driver"),
-  Command: lib("command"),
-  Event: lib("event"),
-  Robot: lib("robot"),
-  Device: lib("device"),
-  Connection: lib("connection")
+  Client: require("./lib/client"),
+
+  Drivers: {
+    HTTP: require("./lib/drivers/http"),
+    MQTT: require("./lib/drivers/mqtt"),
+    SocketIO: require("./lib/drivers/socketio"),
+  },
+
+  Command: require("./lib/command"),
+  Event: require("./lib/event"),
+  Robot: require("./lib/robot"),
+  Device: require("./lib/device"),
+  Connection: require("./lib/connection")
 };
