@@ -62,22 +62,22 @@ describe("Client", function() {
       ).to.throw("Unsupported protocol");
     });
 
-    it("should set connection to correct client", function() {
+    it("should set driver to correct driver protocol", function() {
       var client = new Client("http", opts);
       client.connect();
-      expect(client.connection).to.be.an.instanceOf(HTTP);
+      expect(client.driver).to.be.an.instanceOf(HTTP);
     });
 
-    it("should set connection to correct client", function() {
+    it("should set driver to correct driver protocol", function() {
       var client = new Client("socketio", opts);
       client.connect();
-      expect(client.connection).to.be.an.instanceOf(SocketIO);
+      expect(client.driver).to.be.an.instanceOf(SocketIO);
     });
 
-    it("should set connection to correct client", function() {
+    it("should set driver to correct driver protocol", function() {
       var client = new Client("mqtt", opts);
       client.connect();
-      expect(client.connection).to.be.an.instanceOf(MQTT);
+      expect(client.driver).to.be.an.instanceOf(MQTT);
     });
 
   });
@@ -144,9 +144,7 @@ describe("Client", function() {
       var client = new Client("http", options);
       client.connect();
       client.disconnect();
-      expect(
-        client.connection
-      ).to.be.eql(null);
+      expect(client.driver).to.be.eql(null);
     });
   });
 });
