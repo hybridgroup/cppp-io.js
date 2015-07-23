@@ -21,7 +21,6 @@ global.AssertionError = chai.AssertionError;
 global.spy = sinon.spy;
 global.stub = sinon.stub;
 
-
 // convenience function to require modules in lib directory
 global.source = function(module) {
   return require(path.normalize("./../lib/" + module));
