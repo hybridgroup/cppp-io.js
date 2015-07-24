@@ -1,8 +1,8 @@
 "use strict";
 
-var _ = source("utils");
+var _ = lib("utils");
 
-describe("_", function() {
+describe("Helpers", function() {
   describe("extend", function() {
     var extend = _.extend;
 
@@ -82,6 +82,20 @@ describe("_", function() {
 
       expect(fn).to.be.calledWith(array[0], 0);
       expect(fn).to.be.calledWith(array[1], 1);
+    });
+  });
+
+  describe("#resolve", function() {
+    var callback;
+
+    beforeEach(function() {
+      callback = spy();
+    });
+
+    it("triggers a callback with passed error/value if provided", function() {
+      expect(_.resolve(callback, "err", "value")).to.be.eql("err");
+      expect(callback).to.be.calledWith("err", "value");
+      expect(_.resolve(null, null, "value")).to.be.eql("value");
     });
   });
 });

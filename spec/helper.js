@@ -22,39 +22,10 @@ global.spy = sinon.spy;
 global.stub = sinon.stub;
 
 // convenience function to require modules in lib directory
-global.source = function(module) {
+global.lib = function(module) {
   return require(path.normalize("./../lib/" + module));
 };
 
-global.jsonApi = {
-  MCP: {
-    robots: [{
-      name: "myRobot",
-      connections: [{
-        name: "myRobotConnection",
-        adaptor: "myRobotAdaptor"
-      }],
-      devices: [{
-        name: "myRobotDevice",
-        driver: "myRobotDeviceDriver",
-        connection: "myRobotDeviceConnection",
-        commands: [
-          "myDeviceCommand1",
-          "myDeviceCommand2"
-        ],
-        events: [
-          "myDeviceEvent1",
-          "myDeviceEvent2"
-        ],
-        details: {}
-      }],
-      commands: [
-        "myRobotCommand1",
-        "myRobotCommand2"
-      ],
-      events: ["myRobotEvent1", "myRobotEvent2"]
-    }],
-    commands: ["myCommand1", "myCommand2"],
-    events: ["myEvent1", "myEvent2"]
-  }
+global.support = function(module) {
+  return require("./support/" + module);
 };
