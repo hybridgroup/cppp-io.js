@@ -2,7 +2,7 @@
 
 var Client = lib("client"),
     decorator = lib("decorator"),
-    HTTP = lib("drivers/http");
+    HTTP = lib("protocols/http");
 
 describe("Client", function() {
   var client;
