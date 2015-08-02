@@ -40,26 +40,6 @@ describe("Client", function() {
         expect(create("nope")).to.throw("Unsupported protocol");
       });
     });
-
-    context("with no options", function() {
-      it("throws an error", function() {
-        expect(create("http")).to.throw("No options provided");
-      });
-    });
-
-    context("with no host", function() {
-      it("throws an error", function() {
-        var fn = create("http", { port: "3000" });
-        expect(fn).to.throw("No host option provided");
-      });
-    });
-
-    context("with no port", function() {
-      it("throws an error", function() {
-        var fn = create("http", { host: "localhost" });
-        expect(fn).to.throw("No port option provided");
-      });
-    });
   });
 
   describe("#connect", function() {
