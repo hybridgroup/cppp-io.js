@@ -1,150 +1,135 @@
 "use strict";
 
-var Client = source("client");
-var HTTP = source("drivers/http");
-var SocketIO = source("drivers/socketio");
-var MQTT = source("drivers/mqtt");
-var request = require("request");
-
-/*global jsonApi*/
+var Client = lib("client"),
+    decorator = lib("decorator"),
+    HTTP = lib("protocols/http");
 
 describe("Client", function() {
-  var options = {host: "127.0.0.1", port: 8080};
+  var client;
 
-  describe("#constructor", function() {
-    it("should initialize options", function() {
-      var client = new Client("http", options);
+  beforeEach(function() {
+    client = new Client("http", { host: "localhost", port: 3000 });
+  });
+
+  it("is a class", function() {
+    expect(Client).to.be.a("function");
+    expect(client).to.be.an("object");
+  });
+
+  describe("constructor", function() {
+    function create(protocol, opts) {
+      return function() { return new Client(protocol, opts); };
+    }
+
+    it("sets @protocol to the specified protocol", function() {
       expect(client.protocol).to.be.eql("http");
-      expect(client.host).to.be.eql("127.0.0.1");
-      expect(client.port).to.be.eql(8080);
-    });
-  });
-
-  describe("#initialize with missing params", function() {
-
-    it("should throw error about missing protocol", function() {
-      expect(Client.bind("new")).to.throw("Missing protocol");
     });
 
-    it("should throw error about missing options", function() {
-      expect(Client.bind("new", "http")).to.throw("No options provided");
-    });
-
-    it("should throw error about missing host", function() {
-      var fn = Client.bind("new", "http", { port: "3000" });
-      expect(fn).to.throw("No host option provided");
-    });
-
-    it("should throw error about missing port", function() {
-      var fn = Client.bind("new", "http", { host: "0.0.0.0" });
-      expect(fn).to.throw("No port option provided");
-    });
-  });
-
-  describe("#initialize with correct params", function() {
-    var opts = { host: "127.0.0.1", port: "3000" };
-
-    beforeEach(function(done) {
-      sinon
-        .stub(request, "get")
-        .yields(null, {statusCode: 200}, JSON.stringify(jsonApi));
-      done();
-    });
-
-    afterEach(function(done) {
-      request.get.restore();
-      done();
-    });
-
-    it("should throw error about wrong protocol", function() {
-      expect(
-        Client.bind("new", "wrong", opts)
-      ).to.throw("Unsupported protocol");
-    });
-
-    it("should set driver to correct driver protocol", function() {
-      var client = new Client("http", opts);
-      client.connect();
+    it("sets @driver to a driver instance", function() {
       expect(client.driver).to.be.an.instanceOf(HTTP);
     });
 
-    it("should set driver to correct driver protocol", function() {
-      var client = new Client("socketio", opts);
-      client.connect();
-      expect(client.driver).to.be.an.instanceOf(SocketIO);
-    });
-
-    it("should set driver to correct driver protocol", function() {
-      var client = new Client("mqtt", opts);
-      client.connect();
-      expect(client.driver).to.be.an.instanceOf(MQTT);
-    });
-
-  });
-
-  describe("#methods", function() {
-    beforeEach(function(done) {
-      sinon
-        .stub(request, "get")
-        .yields(null, {statusCode: 200}, JSON.stringify(jsonApi));
-      done();
-    });
-
-    afterEach(function(done) {
-      request.get.restore();
-      done();
-    });
-
-    describe("#getRobots", function() {
-      it("should get the list of robots", function() {
-        var opts = { host: "127.0.0.1", port: "3000" };
-        var client = new Client("http", opts);
-        client.connect();
-        expect(client.getRobots()).to.be.instanceof(Array);
+    context("without a protocol", function() {
+      it("throws an error", function() {
+        expect(create()).to.throw("Missing protocol");
       });
     });
 
-    describe("#getRobot", function() {
-      it("should return the robot", function() {
-        var opts = { host: "127.0.0.1", port: "3000" };
-        var client = new Client("http", opts);
-        client.connect();
-        should.exist(client.getRobot("myRobot"));
-      });
-
-      it("should return null if no robot found", function() {
-        var opts = { host: "127.0.0.1", port: "3000" };
-        var client = new Client("http", opts);
-        client.connect();
-        should.not.exist(client.getRobot("otherRobot"));
-      });
-    });
-
-    describe("#getCommands", function() {
-      it("should get the list of commands", function() {
-        var opts = { host: "127.0.0.1", port: "3000" };
-        var client = new Client("http", opts);
-        client.connect();
-        expect(client.getCommands()).to.be.instanceof(Array);
-      });
-    });
-
-    describe("#getEvents", function() {
-      it("should get the list of events", function() {
-        var opts = { host: "127.0.0.1", port: "3000" };
-        var client = new Client("http", opts);
-        client.connect();
-        expect(client.getEvents()).to.be.instanceof(Array);
+    context("with an invalid protocol", function() {
+      it("throws an error", function() {
+        expect(create("nope")).to.throw("Unsupported protocol");
       });
     });
   });
 
-  describe("#disconnect", function() {
-    it("should set connected to false", function() {
-      var client = new Client("http", options);
-      client.connect();
-      client.disconnect();
-      expect(client.driver).to.be.eql(null);
+  describe("#connect", function() {
+    var callback;
+
+    beforeEach(function() {
+      callback = spy();
+      stub(client.driver, "connect");
+      stub(decorator, "decorate");
+      client.connect(callback);
+    });
+
+    afterEach(function() {
+      decorator.decorate.restore();
+    });
+
+    it("tells the driver to connect", function() {
+      expect(client.driver.connect).to.be.called;
+      expect(callback).to.not.be.called;
+    });
+
+    describe("once connected", function() {
+      context("if data was returned", function() {
+        it("decorates and returns the server data", function() {
+          decorator.decorate.returns("decorated data");
+          client.driver.connect.yield(null, "data");
+          expect(callback).to.be.calledWith(null, "decorated data");
+        });
+      });
+
+      context("if there was an error", function() {
+        it("resolves the callback", function() {
+          client.driver.connect.yield("error");
+          expect(callback).to.be.calledWith("error", undefined);
+          expect(decorator.decorate).to.not.be.called;
+        });
+      });
+    });
+  });
+
+  describe("#update", function() {
+    var callback;
+
+    beforeEach(function() {
+      callback = spy();
+
+      stub(client.driver, "update");
+      stub(decorator, "decorate");
+    });
+
+    afterEach(function() {
+      decorator.decorate.restore();
+    });
+
+    context("if not connected", function() {
+      it("triggers the callback with an error", function() {
+        client.update(callback);
+        var err = "Not connected. Call Client#connect instead.";
+        expect(callback).to.be.calledWith(err);
+      });
+    });
+
+    context("if connected", function() {
+      beforeEach(function() {
+        client.driver.connected = true;
+        client.update(callback);
+      });
+
+      it("tells the driver to update", function() {
+        expect(client.driver.update).to.be.called;
+        expect(callback).to.not.be.called;
+      });
+
+      describe("once updated", function() {
+        context("if data was returned", function() {
+          it("decorates and returns the server data", function() {
+            decorator.decorate.returns("decorated data");
+            client.driver.update.yield(null, "data");
+            expect(callback).to.be.calledWith(null, "decorated data");
+          });
+        });
+
+        context("if there was an error", function() {
+          it("resolves the callback", function() {
+            client.driver.update.yield("error");
+            expect(callback).to.be.calledWith("error", undefined);
+            expect(decorator.decorate).to.not.be.called;
+          });
+        });
+      });
     });
   });
 });

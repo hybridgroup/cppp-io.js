@@ -1,7 +1,6 @@
 BIN := ./node_modules/.bin
 SPEC := spec/helper.js $(shell find spec/lib -type f -name "*.js")
 VERSION := $(shell node -e "console.log(require('./package.json').version)")
-UGLIFY_CMD := 
 
 default: lint test
 

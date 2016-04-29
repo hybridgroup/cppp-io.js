@@ -1,0 +1,28 @@
+{
+  "robots": [
+    {
+      "name": "TestBot",
+      "connections": [
+        {
+          "name": "loopback",
+          "adaptor": "Loopback",
+          "details": { "port": "/dev/null", "test": "abc" }
+        }
+      ],
+      "devices": [
+        {
+          "name": "ping",
+          "driver": "Ping",
+          "connection": "loopback",
+          "commands": [ "ping" ],
+          "events": [ "ping" ],
+          "details": { "pin": "13", "test": "abc" }
+        }
+      ],
+      "commands": [ "hello" ],
+      "events": [ "hello" ]
+    }
+  ],
+  "commands": [ "echo" ],
+  "events": [ "robot_added", "robot_removed" ]
+}

@@ -3,7 +3,8 @@ env:
 
 globals:
   expect: true
-  source: true
+  lib: true
+  support: true
   stub: true
   spy: true
   chai: true
